@@ -55,17 +55,73 @@ export interface HealthPlugin {
    * @param request
    */
   queryWorkouts(request: QueryWorkoutRequest): Promise<QueryWorkoutResponse>;
+
+  /**
+   * Query sleep
+   * @param request
+   */
+  querySleep(request: QuerySleepRequest): Promise<QuerySleepResponse>;
+
+  /**
+   * Query activity intensity
+   * @param request
+   */
+  queryActivityIntensity(request: QueryActivityIntensityRequest): Promise<QueryActivityIntensityResponse>;
+
+  /**
+   * Query basal body temperature
+   * @param request
+   */
+  queryBasalBodyTemperature(request: QueryBasalBodyTemperatureRequest): Promise<QueryBasalBodyTemperatureResponse>;
+
+  /**
+   * Query blood glucose
+   * @param request
+   */
+  queryBloodGlucose(request: QueryBloodGlucoseRequest): Promise<QueryBloodGlucoseResponse>;
 }
 
 export declare type HealthPermission =
   | 'READ_STEPS'
   | 'READ_WORKOUTS'
+  | 'READ_HEART_RATE'
+  | 'READ_ROUTE'
   | 'READ_ACTIVE_CALORIES'
   | 'READ_TOTAL_CALORIES'
   | 'READ_DISTANCE'
-  | 'READ_HEART_RATE'
-  | 'READ_ROUTE'
-  | 'READ_MINDFULNESS';
+  | 'READ_BLOOD_GLUCOSE'
+  | 'READ_BLOOD_PRESSURE'
+  | 'READ_BODY_FAT'
+  | 'READ_BODY_TEMPERATURE'
+  | 'READ_BODY_WATER_MASS'
+  | 'READ_BODY_BONE_MASS'
+  | 'READ_BASAL_BODY_TEMPERATURE'
+  | 'READ_BASAL_METABOLIC_RATE'
+  | 'READ_CERVICAL_MUCUS'
+  | 'READ_ELEVATION_GAINED'
+  | 'READ_FLOORS_CLIMBED'
+  | 'READ_HEART_RATE_VARIABILITY'
+  | 'READ_HEIGHT'
+  | 'READ_HYDRATION'
+  | 'READ_INTERMENSTRUAL_BLEEDING'
+  | 'READ_LEAN_BODY_MASS'
+  | 'READ_MENSTRUATION'
+  | 'READ_MINDFULNESS'
+  | 'READ_NUTRITION'
+  | 'READ_OVULATION_TEST'
+  | 'READ_OXYGEN_SATURATION'
+  | 'READ_PLANNED_EXERCISE'
+  | 'READ_POWER'
+  | 'READ_RESPIRATORY_RATE'
+  | 'READ_RESTING_HEART_RATE'
+  | 'READ_SLEEP'
+  | 'READ_SPEED'
+  | 'READ_STEPS_CADENCE'
+  | 'READ_TOTAL_CALORIES_BURNED'
+  | 'READ_VO2_MAX'
+  | 'READ_WEIGHT'
+  | 'READ_WHEELCHAIR_PUSHES';
+
 
 export interface PermissionsRequest {
   permissions: HealthPermission[];
@@ -81,6 +137,24 @@ export interface QueryWorkoutRequest {
   includeHeartRate: boolean;
   includeRoute: boolean;
   includeSteps: boolean;
+}
+
+export interface QuerySleepRequest {
+  startDate: string;
+  endDate: string;
+}
+
+export interface QueryActivityIntensityRequest {
+  startDate: string;
+  endDate: string;
+}
+export interface QueryBasalBodyTemperatureRequest {
+  startDate: string;
+  endDate: string;
+}
+export interface QueryBloodGlucoseRequest {
+  startDate: string;
+  endDate: string;
 }
 
 export interface HeartRateSample {
@@ -114,10 +188,57 @@ export interface Workout {
   heartRate?: HeartRateSample[];
 }
 
+export interface QuerySleepResponse {
+  sleepSessions: SleepSample[];
+}
+
+export interface SleepSample {
+  startDate: string;
+  endDate: string;
+  id?: string;
+  stages: SleepStageSample[];
+}
+export interface SleepStageSample {
+  startDate: string;
+  endDate: string;
+  stage: string;
+}
+
+export interface QueryActivityIntensityResponse {
+  activityIntensitySessions: ActivityIntensitySample[];
+}
+export interface ActivityIntensitySample {
+  startDate: string;
+  endDate: string;
+  id?: string;
+  activityIntensityType: string;
+}
+
+export interface QueryBasalBodyTemperatureResponse {
+  basalBodyTemperatureSessions: BasalBodyTemperatureSample[];
+}
+export interface BasalBodyTemperatureSample {
+  sampleDate: string;
+  id?: string;
+  temperatureCelsius: number;
+}
+
+export interface QueryBloodGlucoseResponse {
+  bloodGlucoseSessions: BloodGlucoseSample[];
+}
+export interface BloodGlucoseSample {
+  sampleDate: string;
+  id?: string;
+  level: number;
+  specimenSource: string;
+  mealType: string;
+  relationToMeal: string;
+}
+
 export interface QueryAggregatedRequest {
   startDate: string;
   endDate: string;
-  dataType: 'steps' | 'active-calories' | 'mindfulness';
+  dataType: 'steps' | 'basal-calories' | 'active-calories' | 'total-calories' | 'distance' |'mindfulness';
   bucket: string;
 }
 
