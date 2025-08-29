@@ -62,11 +62,11 @@ export interface HealthPlugin {
    */
   querySleep(request: QuerySleepRequest): Promise<QuerySleepResponse>;
 
-  /**
-   * Query activity intensity
-   * @param request
-   */
-  queryActivityIntensity(request: QueryActivityIntensityRequest): Promise<QueryActivityIntensityResponse>;
+  // /**
+  //  * Query activity intensity
+  //  * @param request
+  //  */
+  // queryActivityIntensity(request: QueryActivityIntensityRequest): Promise<QueryActivityIntensityResponse>;
 
   /**
    * Query basal body temperature
@@ -79,8 +79,14 @@ export interface HealthPlugin {
    * @param request
    */
   queryBloodGlucose(request: QueryBloodGlucoseRequest): Promise<QueryBloodGlucoseResponse>;
+  /**
+   * Query oxygen saturation
+   * @param request
+   */
+  queryOxygenSaturation(request: QueryOxygenSaturationRequest): Promise<QueryOxygenSaturationResponse>;
 }
-
+  
+// --- Permissions ---
 export declare type HealthPermission =
   | 'READ_STEPS'
   | 'READ_WORKOUTS'
@@ -89,6 +95,7 @@ export declare type HealthPermission =
   | 'READ_ACTIVE_CALORIES'
   | 'READ_TOTAL_CALORIES'
   | 'READ_DISTANCE'
+  | 'READ_ACTIVITY_INTENSITY'
   | 'READ_BLOOD_GLUCOSE'
   | 'READ_BLOOD_PRESSURE'
   | 'READ_BODY_FAT'
@@ -131,123 +138,125 @@ export interface PermissionResponse {
   permissions: { [key: string]: boolean }[];
 }
 
+// --- Data Types ---
+// every data type has a query request, a query response and a sample type (or session type) and sometimes with sub types
+// the doculmentation of the availabe data types can be found here: https://developer.android.com/health-and-fitness/guides/health-connect/plan/data-types#alpha10
+// also dont forget to check the HealthPermission list and add the query method to HealthPlugin
+
+// Workouts
 export interface QueryWorkoutRequest {
-  startDate: string;
-  endDate: string;
-  includeHeartRate: boolean;
-  includeRoute: boolean;
-  includeSteps: boolean;
+    startDate: string;
+    endDate: string;
+    includeHeartRate: boolean;
+    includeRoute: boolean;
+    includeSteps: boolean;
 }
-
-export interface QuerySleepRequest {
-  startDate: string;
-  endDate: string;
-}
-
-export interface QueryActivityIntensityRequest {
-  startDate: string;
-  endDate: string;
-}
-export interface QueryBasalBodyTemperatureRequest {
-  startDate: string;
-  endDate: string;
-}
-export interface QueryBloodGlucoseRequest {
-  startDate: string;
-  endDate: string;
-}
-
-export interface HeartRateSample {
-  timestamp: string;
-  bpm: number;
-}
-
-export interface RouteSample {
-  timestamp: string;
-  lat: number;
-  lng: number;
-  alt?: number;
-}
-
 export interface QueryWorkoutResponse {
-  workouts: Workout[];
+    workouts: Workout[];
 }
-
 export interface Workout {
-  startDate: string;
-  endDate: string;
-  workoutType: string;
-  sourceName: string;
-  id?: string;
-  duration: number;
-  distance?: number;
-  steps?: number;
-  calories: number;
-  sourceBundleId: string;
-  route?: RouteSample[];
-  heartRate?: HeartRateSample[];
+    startDate: string;
+    endDate: string;
+    workoutType: string;
+    sourceName: string;
+    id?: string;
+    duration: number;
+    distance?: number;
+    steps?: number;
+    calories: number;
+    sourceBundleId: string;
+    route?: RouteSample[];
+    heartRate?: HeartRateSample[];
+}
+export interface HeartRateSample {
+    timestamp: string;
+    bpm: number;
+}
+export interface RouteSample {
+    timestamp: string;
+    lat: number;
+    lng: number;
+    alt?: number;
 }
 
+// Sleep
+export interface QuerySleepRequest {
+    startDate: string;
+    endDate: string;
+}
 export interface QuerySleepResponse {
-  sleepSessions: SleepSample[];
+    sleepSessions: SleepSample[];
 }
-
 export interface SleepSample {
-  startDate: string;
-  endDate: string;
-  id?: string;
-  stages: SleepStageSample[];
+    startDate: string;
+    endDate: string;
+    id?: string;
+    stages: SleepStageSample[];
 }
 export interface SleepStageSample {
-  startDate: string;
-  endDate: string;
-  stage: string;
+    startDate: string;
+    endDate: string;
+    stage: string;
 }
 
-export interface QueryActivityIntensityResponse {
-  activityIntensitySessions: ActivityIntensitySample[];
+// Basal Body Temperature
+export interface QueryBasalBodyTemperatureRequest {
+    startDate: string;
+    endDate: string;
 }
-export interface ActivityIntensitySample {
-  startDate: string;
-  endDate: string;
-  id?: string;
-  activityIntensityType: string;
-}
-
 export interface QueryBasalBodyTemperatureResponse {
-  basalBodyTemperatureSessions: BasalBodyTemperatureSample[];
+    basalBodyTemperatureSessions: BasalBodyTemperatureSample[];
 }
 export interface BasalBodyTemperatureSample {
-  sampleDate: string;
-  id?: string;
-  temperatureCelsius: number;
+    sampleDate: string;
+    id?: string;
+    temperatureCelsius: number;
 }
 
+// Blood Glucose
+export interface QueryBloodGlucoseRequest {
+    startDate: string;
+    endDate: string;
+}
 export interface QueryBloodGlucoseResponse {
-  bloodGlucoseSessions: BloodGlucoseSample[];
+    bloodGlucoseSessions: BloodGlucoseSample[];
 }
 export interface BloodGlucoseSample {
-  sampleDate: string;
-  id?: string;
-  level: number;
-  specimenSource: string;
-  mealType: string;
-  relationToMeal: string;
+    sampleDate: string;
+    id?: string;
+    level: number;
+    specimenSource: string;
+    mealType: string;
+    relationToMeal: string;
 }
 
+// Oxygen Saturation
+export interface QueryOxygenSaturationRequest {
+    startDate: string;
+    endDate: string;
+}
+export interface QueryOxygenSaturationResponse {
+    oxygenSaturationSessions: OxygenSaturationSample[];
+}
+export interface OxygenSaturationSample {
+    sampleDate: string;
+    id?: string;
+    percentage: number;
+}
+
+// Aggregated Data
 export interface QueryAggregatedRequest {
-  startDate: string;
-  endDate: string;
-  dataType: 'steps' | 'basal-calories' | 'active-calories' | 'total-calories' | 'distance' |'mindfulness';
-  bucket: string;
+    startDate: string;
+    endDate: string;
+    dataType: 'steps' | 'basal-calories' | 'active-calories' | 'total-calories' | 'distance' | 'mindfulness';
+    bucket: string;
 }
-
 export interface QueryAggregatedResponse {
-  aggregatedData: AggregatedSample[];
+    aggregatedData: AggregatedSample[];
+}
+export interface AggregatedSample {
+    startDate: string;
+    endDate: string;
+    value: number;
 }
 
-export interface AggregatedSample {
-  startDate: string;
-  endDate: string;
-  value: number;
-}

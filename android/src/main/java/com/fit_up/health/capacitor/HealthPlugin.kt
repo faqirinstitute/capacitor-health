@@ -11,13 +11,6 @@ import androidx.health.connect.client.PermissionController
 import androidx.health.connect.client.aggregate.AggregateMetric
 import androidx.health.connect.client.aggregate.AggregationResult
 import androidx.health.connect.client.aggregate.AggregationResultGroupedByPeriod
-// import androidx.health.connect.client.records.ActiveCaloriesBurnedRecord
-// import androidx.health.connect.client.records.DistanceRecord
-// import androidx.health.connect.client.records.ExerciseRouteResult
-// import androidx.health.connect.client.records.ExerciseSessionRecord
-// import androidx.health.connect.client.records.HeartRateRecord
-// import androidx.health.connect.client.records.StepsRecord
-// import androidx.health.connect.client.records.TotalCaloriesBurnedRecord
 import androidx.health.connect.client.records.*
 import androidx.health.connect.client.request.AggregateGroupByPeriodRequest
 import androidx.health.connect.client.request.AggregateRequest
@@ -42,7 +35,7 @@ import java.util.concurrent.atomic.AtomicReference
 import kotlin.jvm.optionals.getOrDefault
 
 enum class CapHealthPermission {
-    READ_STEPS, READ_WORKOUTS, READ_HEART_RATE, READ_ROUTE, READ_ACTIVE_CALORIES, READ_TOTAL_CALORIES, READ_DISTANCE, READ_BLOOD_GLUCOSE, READ_BLOOD_PRESSURE, READ_BODY_FAT, READ_BODY_TEMPERATURE, READ_BODY_WATER_MASS, READ_BODY_BONE_MASS, READ_BASAL_BODY_TEMPERATURE, READ_BASAL_METABOLIC_RATE, READ_CERVICAL_MUCUS, READ_ELEVATION_GAINED, READ_FLOORS_CLIMBED, READ_HEART_RATE_VARIABILITY, READ_HEIGHT, READ_HYDRATION, READ_INTERMENSTRUAL_BLEEDING, READ_LEAN_BODY_MASS, READ_MENSTRUATION, READ_MINDFULNESS, READ_NUTRITION, READ_OVULATION_TEST, READ_OXYGEN_SATURATION, READ_PLANNED_EXERCISE, READ_POWER, READ_RESPIRATORY_RATE, READ_RESTING_HEART_RATE, READ_SLEEP, READ_SPEED, READ_STEPS_CADENCE, READ_TOTAL_CALORIES_BURNED, READ_VO2_MAX, READ_WEIGHT, READ_WHEELCHAIR_PUSHES;
+    READ_STEPS, READ_WORKOUTS, READ_HEART_RATE, READ_ROUTE,READ_ACTIVITY_INTENSITY, READ_ACTIVE_CALORIES, READ_TOTAL_CALORIES, READ_DISTANCE, READ_BLOOD_GLUCOSE, READ_BLOOD_PRESSURE, READ_BODY_FAT, READ_BODY_TEMPERATURE, READ_BODY_WATER_MASS, READ_BODY_BONE_MASS, READ_BASAL_BODY_TEMPERATURE, READ_BASAL_METABOLIC_RATE, READ_CERVICAL_MUCUS, READ_ELEVATION_GAINED, READ_FLOORS_CLIMBED, READ_HEART_RATE_VARIABILITY, READ_HEIGHT, READ_HYDRATION, READ_INTERMENSTRUAL_BLEEDING, READ_LEAN_BODY_MASS, READ_MENSTRUATION, READ_MINDFULNESS, READ_NUTRITION, READ_OVULATION_TEST, READ_OXYGEN_SATURATION, READ_PLANNED_EXERCISE, READ_POWER, READ_RESPIRATORY_RATE, READ_RESTING_HEART_RATE, READ_SLEEP, READ_SPEED, READ_STEPS_CADENCE, READ_VO2_MAX, READ_WEIGHT, READ_WHEELCHAIR_PUSHES;
 
     companion object {
         fun from(s: String): CapHealthPermission? {
@@ -204,10 +197,6 @@ enum class CapHealthPermission {
             strings = ["android.permission.READ_STEPS_CADENCE"]
         ),
         Permission(
-            alias = "READ_TOTAL_CALORIES_BURNED",
-            strings = ["android.permission.READ_WEREAD_TOTAL_CALORIES_BURNEDIGHT"]
-        ),
-        Permission(
             alias = "READ_VO2_MAX",
             strings = ["android.permission.READ_VO2_MAX"]
         ),
@@ -276,6 +265,7 @@ class HealthPlugin : Plugin() {
     Pair(CapHealthPermission.READ_TOTAL_CALORIES, "android.permission.health.READ_TOTAL_CALORIES_BURNED"),
     Pair(CapHealthPermission.READ_DISTANCE, "android.permission.health.READ_DISTANCE"),
     Pair(CapHealthPermission.READ_STEPS, "android.permission.health.READ_STEPS"),
+    Pair(CapHealthPermission.READ_ACTIVITY_INTENSITY, "android.permission.health.READ_ACTIVITY_INTENSITY"),
     Pair(CapHealthPermission.READ_BLOOD_GLUCOSE, "android.permission.health.READ_BLOOD_GLUCOSE"),
     Pair(CapHealthPermission.READ_BLOOD_PRESSURE, "android.permission.health.READ_BLOOD_PRESSURE"),
     Pair(CapHealthPermission.READ_BODY_FAT, "android.permission.health.READ_BODY_FAT"),
@@ -304,7 +294,6 @@ class HealthPlugin : Plugin() {
     Pair(CapHealthPermission.READ_SLEEP, "android.permission.health.READ_SLEEP"),
     Pair(CapHealthPermission.READ_SPEED, "android.permission.health.READ_SPEED"),
     Pair(CapHealthPermission.READ_STEPS_CADENCE, "android.permission.health.READ_STEPS_CADENCE"),
-    Pair(CapHealthPermission.READ_TOTAL_CALORIES_BURNED, "android.permission.health.READ_TOTAL_CALORIES_BURNED"),
     Pair(CapHealthPermission.READ_VO2_MAX, "android.permission.health.READ_VO2_MAX"),
     Pair(CapHealthPermission.READ_WEIGHT, "android.permission.health.READ_WEIGHT"),
     Pair(CapHealthPermission.READ_WHEELCHAIR_PUSHES, "android.permission.health.READ_WHEELCHAIR_PUSHES"),
@@ -799,44 +788,44 @@ class HealthPlugin : Plugin() {
         6 to "REM",
         7 to "AWAKE_IN_BED"
     )
-    @PluginMethod
-    fun queryActivityIntensity(call: PluginCall) {
-        val startDate = call.getString("startDate") 
-        val endDate = call.getString("endDate") 
-        if (startDate == null || endDate == null) {
-            call.reject("Missing required parameters: startDate or endDate")
-            return
-        }
-        val startDateTime = Instant.parse(startDate).atZone(ZoneId.systemDefault()).toLocalDateTime()
-        val endDateTime = Instant.parse(endDate).atZone(ZoneId.systemDefault()).toLocalDateTime()
+    // @PluginMethod
+    // fun queryActivityIntensity(call: PluginCall) {
+    //     val startDate = call.getString("startDate") 
+    //     val endDate = call.getString("endDate") 
+    //     if (startDate == null || endDate == null) {
+    //         call.reject("Missing required parameters: startDate or endDate")
+    //         return
+    //     }
+    //     val startDateTime = Instant.parse(startDate).atZone(ZoneId.systemDefault()).toLocalDateTime()
+    //     val endDateTime = Instant.parse(endDate).atZone(ZoneId.systemDefault()).toLocalDateTime()
 
-        val timeRange = TimeRangeFilter.between(startDateTime, endDateTime)
-        val request =
-            ReadRecordsRequest(ActivityIntensityRecord::class, timeRange, emptySet(), true, 1000)
-        CoroutineScope(Dispatchers.IO).launch {
-            try {
-                val response = healthConnectClient.readRecords(request)
-                val arr = JSArray()
-                for (s in response.records) {
-                    val obj = JSObject()
-                    obj.put("id", s.metadata.id)
-                    obj.put("startDate", s.startTime.toString())
-                    obj.put("endDate", s.endTime.toString())
-                    obj.put("activityIntensityType", activityIntensityMapping.getOrDefault(s.activityIntensityType, "UNKNOWN"))
-                    arr.put(obj)
-                }
-                val res = JSObject()
-                res.put("activityIntensitySessions", arr)
-                call.resolve(res)
-            } catch (e: Exception) {
-                call.reject("Error querying activity intensity: ${e.message}")
-            }
-        }
-    }
-    private val activityIntensityMapping = mapOf(
-        0 to "MODERATE",
-        1 to "VIGOROUS"
-    )
+    //     val timeRange = TimeRangeFilter.between(startDateTime, endDateTime)
+    //     val request =
+    //         ReadRecordsRequest(ActivityIntensityRecord::class, timeRange, emptySet(), true, 1000)
+    //     CoroutineScope(Dispatchers.IO).launch {
+    //         try {
+    //             val response = healthConnectClient.readRecords(request)
+    //             val arr = JSArray()
+    //             for (s in response.records) {
+    //                 val obj = JSObject()
+    //                 obj.put("id", s.metadata.id)
+    //                 obj.put("startDate", s.startTime.toString())
+    //                 obj.put("endDate", s.endTime.toString())
+    //                 obj.put("activityIntensityType", activityIntensityMapping.getOrDefault(s.activityIntensityType, "UNKNOWN"))
+    //                 arr.put(obj)
+    //             }
+    //             val res = JSObject()
+    //             res.put("activityIntensitySessions", arr)
+    //             call.resolve(res)
+    //         } catch (e: Exception) {
+    //             call.reject("Error querying activity intensity: ${e.message}")
+    //         }
+    //     }
+    // }
+    // private val activityIntensityMapping = mapOf(
+    //     0 to "MODERATE",
+    //     1 to "VIGOROUS"
+    // )
 
     @PluginMethod
     fun queryBasalBodyTemperature(call: PluginCall) {
@@ -930,6 +919,40 @@ class HealthPlugin : Plugin() {
         3 to "BEFORE_MEAL",
         4 to "AFTER_MEAL",
     )
+
+    @PluginMethod
+    fun queryOxygenSaturation(call: PluginCall) {
+        val startDate = call.getString("startDate") 
+        val endDate = call.getString("endDate") 
+        if (startDate == null || endDate == null) {
+            call.reject("Missing required parameters: startDate or endDate")
+            return
+        }
+        val startDateTime = Instant.parse(startDate).atZone(ZoneId.systemDefault()).toLocalDateTime()
+        val endDateTime = Instant.parse(endDate).atZone(ZoneId.systemDefault()).toLocalDateTime()
+
+        val timeRange = TimeRangeFilter.between(startDateTime, endDateTime)
+        val request =
+            ReadRecordsRequest(OxygenSaturationRecord::class, timeRange, emptySet(), true, 1000)
+        CoroutineScope(Dispatchers.IO).launch {
+            try {
+                val response = healthConnectClient.readRecords(request)
+                val arr = JSArray()
+                for (s in response.records) {
+                    val obj = JSObject()
+                    obj.put("id", s.metadata.id)
+                    obj.put("sampleDate", s.time.toString())
+                    obj.put("percentage", s.percentage)
+                    arr.put(obj)
+                }
+                val res = JSObject()
+                res.put("oxygenSaturationSessions", arr)
+                call.resolve(res)
+            } catch (e: Exception) {
+                call.reject("Error querying oxygen saturation: ${e.message}")
+            }
+        }
+    }
 }
 
 

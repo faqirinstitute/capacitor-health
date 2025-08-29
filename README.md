@@ -75,6 +75,10 @@ npx cap sync
 * [`showHealthConnectInPlayStore()`](#showhealthconnectinplaystore)
 * [`queryAggregated(...)`](#queryaggregated)
 * [`queryWorkouts(...)`](#queryworkouts)
+* [`querySleep(...)`](#querysleep)
+* [`queryBasalBodyTemperature(...)`](#querybasalbodytemperature)
+* [`queryBloodGlucose(...)`](#querybloodglucose)
+* [`queryOxygenSaturation(...)`](#queryoxygensaturation)
 * [Interfaces](#interfaces)
 * [Type Aliases](#type-aliases)
 
@@ -208,6 +212,74 @@ Query workouts
 --------------------
 
 
+### querySleep(...)
+
+```typescript
+querySleep(request: QuerySleepRequest) => Promise<QuerySleepResponse>
+```
+
+Query sleep
+
+| Param         | Type                                                            |
+| ------------- | --------------------------------------------------------------- |
+| **`request`** | <code><a href="#querysleeprequest">QuerySleepRequest</a></code> |
+
+**Returns:** <code>Promise&lt;<a href="#querysleepresponse">QuerySleepResponse</a>&gt;</code>
+
+--------------------
+
+
+### queryBasalBodyTemperature(...)
+
+```typescript
+queryBasalBodyTemperature(request: QueryBasalBodyTemperatureRequest) => Promise<QueryBasalBodyTemperatureResponse>
+```
+
+Query basal body temperature
+
+| Param         | Type                                                                                          |
+| ------------- | --------------------------------------------------------------------------------------------- |
+| **`request`** | <code><a href="#querybasalbodytemperaturerequest">QueryBasalBodyTemperatureRequest</a></code> |
+
+**Returns:** <code>Promise&lt;<a href="#querybasalbodytemperatureresponse">QueryBasalBodyTemperatureResponse</a>&gt;</code>
+
+--------------------
+
+
+### queryBloodGlucose(...)
+
+```typescript
+queryBloodGlucose(request: QueryBloodGlucoseRequest) => Promise<QueryBloodGlucoseResponse>
+```
+
+Query blood glucose
+
+| Param         | Type                                                                          |
+| ------------- | ----------------------------------------------------------------------------- |
+| **`request`** | <code><a href="#querybloodglucoserequest">QueryBloodGlucoseRequest</a></code> |
+
+**Returns:** <code>Promise&lt;<a href="#querybloodglucoseresponse">QueryBloodGlucoseResponse</a>&gt;</code>
+
+--------------------
+
+
+### queryOxygenSaturation(...)
+
+```typescript
+queryOxygenSaturation(request: QueryOxygenSaturationRequest) => Promise<QueryOxygenSaturationResponse>
+```
+
+Query oxygen saturation
+
+| Param         | Type                                                                                  |
+| ------------- | ------------------------------------------------------------------------------------- |
+| **`request`** | <code><a href="#queryoxygensaturationrequest">QueryOxygenSaturationRequest</a></code> |
+
+**Returns:** <code>Promise&lt;<a href="#queryoxygensaturationresponse">QueryOxygenSaturationResponse</a>&gt;</code>
+
+--------------------
+
+
 ### Interfaces
 
 
@@ -243,12 +315,12 @@ Query workouts
 
 #### QueryAggregatedRequest
 
-| Prop            | Type                               |
-| --------------- | ---------------------------------- |
-| **`startDate`** | <code>string</code>                |
-| **`endDate`**   | <code>string</code>                |
-| **`dataType`**  | <code>'steps' \| 'calories'</code> |
-| **`bucket`**    | <code>string</code>                |
+| Prop            | Type                                                                                                             |
+| --------------- | ---------------------------------------------------------------------------------------------------------------- |
+| **`startDate`** | <code>string</code>                                                                                              |
+| **`endDate`**   | <code>string</code>                                                                                              |
+| **`dataType`**  | <code>'steps' \| 'basal-calories' \| 'active-calories' \| 'total-calories' \| 'distance' \| 'mindfulness'</code> |
+| **`bucket`**    | <code>string</code>                                                                                              |
 
 
 #### QueryWorkoutResponse
@@ -269,6 +341,7 @@ Query workouts
 | **`id`**             | <code>string</code>            |
 | **`duration`**       | <code>number</code>            |
 | **`distance`**       | <code>number</code>            |
+| **`steps`**          | <code>number</code>            |
 | **`calories`**       | <code>number</code>            |
 | **`sourceBundleId`** | <code>string</code>            |
 | **`route`**          | <code>RouteSample[]</code>     |
@@ -301,6 +374,116 @@ Query workouts
 | **`endDate`**          | <code>string</code>  |
 | **`includeHeartRate`** | <code>boolean</code> |
 | **`includeRoute`**     | <code>boolean</code> |
+| **`includeSteps`**     | <code>boolean</code> |
+
+
+#### QuerySleepResponse
+
+| Prop                | Type                       |
+| ------------------- | -------------------------- |
+| **`sleepSessions`** | <code>SleepSample[]</code> |
+
+
+#### SleepSample
+
+| Prop            | Type                            |
+| --------------- | ------------------------------- |
+| **`startDate`** | <code>string</code>             |
+| **`endDate`**   | <code>string</code>             |
+| **`id`**        | <code>string</code>             |
+| **`stages`**    | <code>SleepStageSample[]</code> |
+
+
+#### SleepStageSample
+
+| Prop            | Type                |
+| --------------- | ------------------- |
+| **`startDate`** | <code>string</code> |
+| **`endDate`**   | <code>string</code> |
+| **`stage`**     | <code>string</code> |
+
+
+#### QuerySleepRequest
+
+| Prop            | Type                |
+| --------------- | ------------------- |
+| **`startDate`** | <code>string</code> |
+| **`endDate`**   | <code>string</code> |
+
+
+#### QueryBasalBodyTemperatureResponse
+
+| Prop                               | Type                                      |
+| ---------------------------------- | ----------------------------------------- |
+| **`basalBodyTemperatureSessions`** | <code>BasalBodyTemperatureSample[]</code> |
+
+
+#### BasalBodyTemperatureSample
+
+| Prop                     | Type                |
+| ------------------------ | ------------------- |
+| **`sampleDate`**         | <code>string</code> |
+| **`id`**                 | <code>string</code> |
+| **`temperatureCelsius`** | <code>number</code> |
+
+
+#### QueryBasalBodyTemperatureRequest
+
+| Prop            | Type                |
+| --------------- | ------------------- |
+| **`startDate`** | <code>string</code> |
+| **`endDate`**   | <code>string</code> |
+
+
+#### QueryBloodGlucoseResponse
+
+| Prop                       | Type                              |
+| -------------------------- | --------------------------------- |
+| **`bloodGlucoseSessions`** | <code>BloodGlucoseSample[]</code> |
+
+
+#### BloodGlucoseSample
+
+| Prop                 | Type                |
+| -------------------- | ------------------- |
+| **`sampleDate`**     | <code>string</code> |
+| **`id`**             | <code>string</code> |
+| **`level`**          | <code>number</code> |
+| **`specimenSource`** | <code>string</code> |
+| **`mealType`**       | <code>string</code> |
+| **`relationToMeal`** | <code>string</code> |
+
+
+#### QueryBloodGlucoseRequest
+
+| Prop            | Type                |
+| --------------- | ------------------- |
+| **`startDate`** | <code>string</code> |
+| **`endDate`**   | <code>string</code> |
+
+
+#### QueryOxygenSaturationResponse
+
+| Prop                           | Type                                  |
+| ------------------------------ | ------------------------------------- |
+| **`oxygenSaturationSessions`** | <code>OxygenSaturationSample[]</code> |
+
+
+#### OxygenSaturationSample
+
+| Prop             | Type                |
+| ---------------- | ------------------- |
+| **`sampleDate`** | <code>string</code> |
+| **`id`**         | <code>string</code> |
+| **`percentage`** | <code>number</code> |
+
+
+#### QueryOxygenSaturationRequest
+
+| Prop            | Type                |
+| --------------- | ------------------- |
+| **`startDate`** | <code>string</code> |
+| **`endDate`**   | <code>string</code> |
 
 
 ### Type Aliases
@@ -308,6 +491,6 @@ Query workouts
 
 #### HealthPermission
 
-<code>'READ_STEPS' | 'READ_WORKOUTS' | 'READ_CALORIES' | 'READ_DISTANCE' | 'READ_HEART_RATE' | 'READ_ROUTE'</code>
+<code>'READ_STEPS' | 'READ_WORKOUTS' | 'READ_HEART_RATE' | 'READ_ROUTE' | 'READ_ACTIVE_CALORIES' | 'READ_TOTAL_CALORIES' | 'READ_DISTANCE' | 'READ_ACTIVITY_INTENSITY' | 'READ_BLOOD_GLUCOSE' | 'READ_BLOOD_PRESSURE' | 'READ_BODY_FAT' | 'READ_BODY_TEMPERATURE' | 'READ_BODY_WATER_MASS' | 'READ_BODY_BONE_MASS' | 'READ_BASAL_BODY_TEMPERATURE' | 'READ_BASAL_METABOLIC_RATE' | 'READ_CERVICAL_MUCUS' | 'READ_ELEVATION_GAINED' | 'READ_FLOORS_CLIMBED' | 'READ_HEART_RATE_VARIABILITY' | 'READ_HEIGHT' | 'READ_HYDRATION' | 'READ_INTERMENSTRUAL_BLEEDING' | 'READ_LEAN_BODY_MASS' | 'READ_MENSTRUATION' | 'READ_MINDFULNESS' | 'READ_NUTRITION' | 'READ_OVULATION_TEST' | 'READ_OXYGEN_SATURATION' | 'READ_PLANNED_EXERCISE' | 'READ_POWER' | 'READ_RESPIRATORY_RATE' | 'READ_RESTING_HEART_RATE' | 'READ_SLEEP' | 'READ_SPEED' | 'READ_STEPS_CADENCE' | 'READ_TOTAL_CALORIES_BURNED' | 'READ_VO2_MAX' | 'READ_WEIGHT' | 'READ_WHEELCHAIR_PUSHES'</code>
 
 </docgen-api>
