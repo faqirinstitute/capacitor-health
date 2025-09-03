@@ -61,6 +61,12 @@ npx cap sync
     <uses-permission android:name="android.permission.health.READ_EXERCISE" />
     <uses-permission android:name="android.permission.health.READ_EXERCISE_ROUTE" />
     <uses-permission android:name="android.permission.health.READ_HEART_RATE" />
+    <uses-permission android:name="android.permission.health.READ_SLEEP" />
+    <uses-permission android:name="android.permission.health.READ_BASAL_BODY_TEMPERATURE" />
+    <uses-permission android:name="android.permission.health.READ_BASAL_METABOLIC_RATE" />
+    <uses-permission android:name="android.permission.health.READ_BLOOD_GLUCOSE" />
+    <uses-permission android:name="android.permission.health.READ_OXYGEN_SATURATION" />
+
 ```
 
 ## API
@@ -79,6 +85,7 @@ npx cap sync
 * [`queryBasalBodyTemperature(...)`](#querybasalbodytemperature)
 * [`queryBloodGlucose(...)`](#querybloodglucose)
 * [`queryOxygenSaturation(...)`](#queryoxygensaturation)
+* [`queryHeartRate(...)`](#queryheartrate)
 * [Interfaces](#interfaces)
 * [Type Aliases](#type-aliases)
 
@@ -276,6 +283,23 @@ Query oxygen saturation
 | **`request`** | <code><a href="#queryoxygensaturationrequest">QueryOxygenSaturationRequest</a></code> |
 
 **Returns:** <code>Promise&lt;<a href="#queryoxygensaturationresponse">QueryOxygenSaturationResponse</a>&gt;</code>
+
+--------------------
+
+
+### queryHeartRate(...)
+
+```typescript
+queryHeartRate(request: QueryHeartRateRequest) => Promise<QueryHeartRateResponse>
+```
+
+Query heart rate
+
+| Param         | Type                                                                    |
+| ------------- | ----------------------------------------------------------------------- |
+| **`request`** | <code><a href="#queryheartraterequest">QueryHeartRateRequest</a></code> |
+
+**Returns:** <code>Promise&lt;<a href="#queryheartrateresponse">QueryHeartRateResponse</a>&gt;</code>
 
 --------------------
 
@@ -479,6 +503,31 @@ Query oxygen saturation
 
 
 #### QueryOxygenSaturationRequest
+
+| Prop            | Type                |
+| --------------- | ------------------- |
+| **`startDate`** | <code>string</code> |
+| **`endDate`**   | <code>string</code> |
+
+
+#### QueryHeartRateResponse
+
+| Prop                        | Type                                |
+| --------------------------- | ----------------------------------- |
+| **`heartRateMeasurements`** | <code>HeartRateMeasurement[]</code> |
+
+
+#### HeartRateMeasurement
+
+| Prop                   | Type                           |
+| ---------------------- | ------------------------------ |
+| **`startDate`**        | <code>string</code>            |
+| **`endDate`**          | <code>string</code>            |
+| **`id`**               | <code>string</code>            |
+| **`HeartRateSamples`** | <code>HeartRateSample[]</code> |
+
+
+#### QueryHeartRateRequest
 
 | Prop            | Type                |
 | --------------- | ------------------- |

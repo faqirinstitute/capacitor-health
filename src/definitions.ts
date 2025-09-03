@@ -84,7 +84,14 @@ export interface HealthPlugin {
    * @param request
    */
   queryOxygenSaturation(request: QueryOxygenSaturationRequest): Promise<QueryOxygenSaturationResponse>;
+  /**
+   * Query heart rate 
+   * @param request
+   */
+  queryHeartRate(request: QueryHeartRateRequest): Promise<QueryHeartRateResponse>;
+
 }
+
   
 // --- Permissions ---
 export declare type HealthPermission =
@@ -168,10 +175,7 @@ export interface Workout {
     route?: RouteSample[];
     heartRate?: HeartRateSample[];
 }
-export interface HeartRateSample {
-    timestamp: string;
-    bpm: number;
-}
+
 export interface RouteSample {
     timestamp: string;
     lat: number;
@@ -242,6 +246,26 @@ export interface OxygenSaturationSample {
     sampleDate: string;
     id?: string;
     percentage: number;
+}
+
+// Heart rate
+export interface QueryHeartRateRequest {
+    startDate: string;
+    endDate: string;
+}
+export interface QueryHeartRateResponse {
+    heartRateMeasurements: HeartRateMeasurement[];
+}
+export interface HeartRateMeasurement {
+    startDate: string;
+    endDate: string;
+    id?: string;
+    HeartRateSamples: HeartRateSample[];
+}
+
+export interface HeartRateSample {
+    timestamp: string;
+    bpm: number;
 }
 
 // Aggregated Data

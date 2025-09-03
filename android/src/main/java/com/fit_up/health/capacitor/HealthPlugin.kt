@@ -953,6 +953,49 @@ class HealthPlugin : Plugin() {
             }
         }
     }
+
+        @PluginMethod
+    fun queryHeartRate(call: PluginCall) {
+        val startDate = call.getString("startDate") 
+        val endDate = call.getString("endDate") 
+        if (startDate == null || endDate == null) {
+            call.reject("Missing required parameters: startDate or endDate")
+            return
+        }
+        val startDateTime = Instant.parse(startDate).atZone(ZoneId.systemDefault()).toLocalDateTime()
+        val endDateTime = Instant.parse(endDate).atZone(ZoneId.systemDefault()).toLocalDateTime()
+
+        val timeRange = TimeRangeFilter.between(startDateTime, endDateTime)
+        val request =
+            ReadRecordsRequest(HeartRateRecord::class, timeRange, emptySet(), true, 1000)
+        CoroutineScope(Dispatchers.IO).launch {
+            try {
+                val response = healthConnectClient.readRecords(request)
+                val arr = JSArray()
+                for (s in response.records) {
+                    val obj = JSObject()
+                    obj.put("id", s.metadata.id)
+                    obj.put("startDate", s.startTime.toString())
+                    obj.put("endDate", s.endTime.toString())
+                    arr.put(obj)
+                    val stagesArr = JSArray()
+                    for (instance in s.samples) {
+                        val stageObj = JSObject()
+                        stageObj.put("timestamp", instance.time.toString())
+                        stageObj.put("bpm",instance.beatsPerMinute)
+                        stagesArr.put(stageObj)
+                    }
+                    obj.put("HeartRateSamples", stagesArr)
+                    arr.put(obj)
+                }
+                val res = JSObject()
+                res.put("heartRateMeasurements", arr)
+                call.resolve(res)
+            } catch (e: Exception) {
+                call.reject("Error querying heart rate: ${e.message}")
+            }
+        }
+    }
 }
 
 
